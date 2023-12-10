@@ -37,7 +37,7 @@ class Gui:
         self.dex_button = Radiobutton(self.mods_frame, variable=self.ability_num, value=2)
         self.roll_button = Button(self.mods_frame, text='ROLL', command=self.roll)
         self.message = Label(self.window, text='Welcome!')
-
+        self.result = Label(self.window)
 
         self.strength_label.pack(side='left')
         self.strength_entry.pack(side='left')
@@ -102,11 +102,33 @@ class Gui:
         except:
             self.message.config(text='Please choose a weapon.')
 
+
+
+
     def roll(self):
-        weapon_choice: int = self.weapon_listbox.curselection()[0] + 1
-        proficiency: int = 0
-        ability: int = 0
-        if self.prof_num == 1:
-            proficiency = (2+((int(self.level_entry.get().strip())-1)//4))
-        if self.ability_num == 1:
-            ability = 5
+        try:
+            weapon_choice: int = self.weapon_listbox.curselection()[0] + 1
+            proficiency: int = 0
+            ability: int = 0
+            if self.prof_num.get() == 1:
+                proficiency = (2+((int(self.level_entry.get().strip())-1)//4))
+            if self.ability_num.get() == 1:
+                ability = int(self.strength_entry.get().strip())
+            else:
+                ability = int(self.dexterity_entry.get().strip())
+
+            dice_list: list = self.weapon_list[weapon_choice][2].split('d')
+            dice_quant: int = int(dice_list[0])
+            dice_type: int = int(dice_list[1])
+            dice_total: int = 0
+            for i in range(dice_quant):
+                dice_total += random.randint(1, dice_type)
+            total: int = dice_total + proficiency + ability
+            self.result.config(text=f'Your {self.weapon_list[weapon_choice][0]} did {dice_total}({self.weapon_list[weapon_choice][2]}) + {proficiency} + {ability} = {total} damage.')
+            self.result.pack()
+
+        except:
+            self.message.config(text='Please enter correct STR, DEX and LVL values.')
+
+
+
